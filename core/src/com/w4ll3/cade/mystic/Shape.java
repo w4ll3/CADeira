@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public class Shape {
 
-    private ArrayList<Vertex> mObj = new ArrayList<Vertex>();
+    protected ArrayList<Vertex> mObj = new ArrayList<Vertex>();
 
     @Override
     public String toString() {
@@ -18,6 +18,10 @@ public class Shape {
 
     public void add(float x, float y) {
         mObj.add(new Vertex(x, y));
+    }
+
+    public void add(Vertex v1) {
+        mObj.add(v1);
     }
 
     public void translate(float x, float y) {
@@ -31,7 +35,7 @@ public class Shape {
     }
 
     public void scale(float x, float y) throws InvalidArgumentException {
-        if (x == 0 || y == 0) throw new InvalidArgumentException(new String[] {"Esta escala exta errada."});
+        if (x == 0 || y == 0) throw new InvalidArgumentException(new String[] {"Exta escala exta errada."});
 
         Vertex transformation[] = new Vertex[]{
                 new Vertex(x, 0, 0),
