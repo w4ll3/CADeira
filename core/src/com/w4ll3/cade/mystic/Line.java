@@ -1,5 +1,7 @@
 package com.w4ll3.cade.mystic;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
 import java.util.ArrayList;
 
 /**

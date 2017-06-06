@@ -1,5 +1,6 @@
 package com.w4ll3.cade.mystic;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.util.ArrayList;
@@ -7,7 +8,7 @@ import java.util.Arrays;
 
 public class Shape {
 
-    protected ArrayList<Vertex> mObj = new ArrayList<Vertex>();
+    private ArrayList<Vertex> mObj = new ArrayList<Vertex>();
 
     @Override
     public String toString() {
@@ -20,7 +21,7 @@ public class Shape {
         mObj.add(new Vertex(x, y));
     }
 
-    public void add(Vertex v1) {
+    void add(Vertex v1) {
         mObj.add(v1);
     }
 
@@ -56,4 +57,17 @@ public class Shape {
         for (Vertex ç : mObj) ç.mul(transformation[0], transformation[1], transformation[2]);
     }
 
+    public void draw(ShapeRenderer renderer) {
+        renderer.begin(ShapeRenderer.ShapeType.Line);
+        for (int i = 0; i < mObj.size() - 1; i++) {
+            renderer.line(mObj.get(i).x, mObj.get(i).y, mObj.get((i + 1) % mObj.size()).x, mObj.get((i + 1) % mObj.size()).y);
+        }
+        renderer.end();
+    }
+
+
+    public Shape update(float x, float y, int pointNumber) {
+        mObj.set(pointNumber, new Vertex(x, y));
+        return this;
+    }
 }
