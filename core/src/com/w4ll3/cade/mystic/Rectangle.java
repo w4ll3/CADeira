@@ -10,8 +10,8 @@ public class Rectangle extends Shape {
     public Rectangle(Vertex a, Vertex b, Vertex c, Vertex d) {
         super.add(a);
         super.add(b);
-        super.add(c);
         super.add(d);
+        super.add(c);
     }
 
 }

@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 public class Shape {
 
-    private ArrayList<Vertex> mObj = new ArrayList<Vertex>();
+    private ArrayList<Vertex> mObj = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -58,16 +58,14 @@ public class Shape {
     }
 
     public void draw(ShapeRenderer renderer) {
-        renderer.begin(ShapeRenderer.ShapeType.Line);
-        for (int i = 0; i < mObj.size() - 1; i++) {
-            renderer.line(mObj.get(i).x, mObj.get(i).y, mObj.get((i + 1) % mObj.size()).x, mObj.get((i + 1) % mObj.size()).y);
+        for (int i = 0; i < mObj.size(); i++) {
+            int loop = (i + 1) % mObj.size();
+            renderer.line(mObj.get(i).x, mObj.get(i).y, mObj.get(loop).x, mObj.get(loop).y);
         }
-        renderer.end();
     }
 
 
-    public Shape update(float x, float y, int pointNumber) {
+    public void update(float x, float y, int pointNumber) {
         mObj.set(pointNumber, new Vertex(x, y));
-        return this;
     }
 }
