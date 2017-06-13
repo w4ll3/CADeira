@@ -2,37 +2,42 @@ package com.w4ll3.cade;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.w4ll3.cade.mystic.Line;
-import com.w4ll3.cade.mystic.Rectangle;
-import com.w4ll3.cade.mystic.Shape;
-import com.w4ll3.cade.mystic.Vertex;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.w4ll3.cade.mystic.*;
 
 import java.util.ArrayList;
 
 public class CADe extends ApplicationAdapter implements ApplicationListener, InputProcessor {
-	private SpriteBatch batch;
-	private ShapeRenderer renderer;
 	private Rectangle rect;
 	private State function;
-	private ArrayList<Shape> objects;
-	private boolean ctrl, progress;
 	private int pointNumber;
+	private SpriteBatch batch;
+	private ShapeRenderer renderer;
+	private OrthographicCamera cam;
+	private boolean ctrl, progress;
+	private ArrayList<Shape> objects;
+	private Stage stage;
 
 	@Override
 	public void create() {
+		ctrl = false;
+		progress = false;
 		batch = new SpriteBatch();
 		renderer = new ShapeRenderer();
-		Stage stage = new Stage();
+		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		cam.setToOrtho(false);
+		cam.update();
+		stage = new Stage(new ScreenViewport(cam));
 		objects = new ArrayList<>();
 		pointNumber = 0;
 		function = State.NONE;
-		ctrl = false;
-		progress = false;
 		rect = new Rectangle(new Vertex(0, 0), new Vertex(100, 0), new Vertex(0, 100), new Vertex(100, 100));
 		objects.add(rect);
 		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
@@ -43,36 +48,38 @@ public class CADe extends ApplicationAdapter implements ApplicationListener, Inp
 					switch (function) {
 						case LINE: {
 							objects.add(new Line(new Vertex(x, y), new Vertex(x, y)));
-							System.out.println(objects.get(objects.size() - 1));
 							progress = true;
 							pointNumber++;
 							break;
 						}
 
 						case RECT: {
-
+							objects.add(new Rectangle(new Vertex(x, y), new Vertex(x, y), new Vertex(x, y), new Vertex(x, y)));
+							progress = true;
+							pointNumber++;
 							break;
 						}
 
 						case CIRCLE: {
-
+							objects.add(new Line(new Vertex(x, y), new Vertex(x, y)));
+							progress = true;
+							pointNumber++;
 							break;
 						}
 
 						case TRIANGLE: {
-
+							objects.add(new Triangle(new Vertex(x, y), new Vertex(x, y), new Vertex(x, y)));
+							progress = true;
+							pointNumber++;
 							break;
 						}
 					}
 				} else if (progress) {
 					switch (function) {
 						case LINE: {
-							if (pointNumber == 2) {
-								System.out.println(objects.get(objects.size() - 1));
+							if (pointNumber == 1) {
 								objects.get(objects.size() - 1).update(x, y, pointNumber - 1);
-								System.out.println(objects.get(objects.size() - 1));
 								progress = false;
-								pointNumber = 0;
 							} else
 								pointNumber++;
 							break;
@@ -82,7 +89,6 @@ public class CADe extends ApplicationAdapter implements ApplicationListener, Inp
 							if (pointNumber == 3) {
 								objects.get(objects.size() - 1).update(x, y, pointNumber - 1);
 								progress = false;
-								pointNumber = 0;
 							} else
 								pointNumber++;
 							break;
@@ -92,7 +98,6 @@ public class CADe extends ApplicationAdapter implements ApplicationListener, Inp
 							if (pointNumber == 1) {
 								objects.get(objects.size() - 1).update(x, y, pointNumber - 1);
 								progress = false;
-								pointNumber = 0;
 							} else
 								pointNumber++;
 							break;
@@ -102,7 +107,6 @@ public class CADe extends ApplicationAdapter implements ApplicationListener, Inp
 							if (pointNumber == 2) {
 								objects.get(objects.size() - 1).update(x, y, pointNumber - 1);
 								progress = false;
-								pointNumber = 0;
 							} else
 								pointNumber++;
 							break;
@@ -133,7 +137,7 @@ public class CADe extends ApplicationAdapter implements ApplicationListener, Inp
 						}
 
 						case RECT: {
-							if (pointNumber == 3)
+							if (pointNumber == 4)
 								return false;
 							else
 								objects.get(objects.size() - 1).update(x, y, pointNumber - 1);
@@ -149,7 +153,7 @@ public class CADe extends ApplicationAdapter implements ApplicationListener, Inp
 						}
 
 						case TRIANGLE: {
-							if (pointNumber == 2)
+							if (pointNumber == 3)
 								return false;
 							else
 								objects.get(objects.size() - 1).update(x, y, pointNumber - 1);
@@ -171,11 +175,21 @@ public class CADe extends ApplicationAdapter implements ApplicationListener, Inp
 	public void render() {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 		batch.end();
+		if (!progress)
+			pointNumber = 0;
+		renderer.setProjectionMatrix(cam.combined);
 		renderer.begin(ShapeRenderer.ShapeType.Line);
 		for (Shape s : objects) s.draw(renderer);
 		renderer.end();
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		cam.position.set(new Vector3(width / 2, height / 2, 0));
+		stage.getViewport().update(width, height);
 	}
 
 	@Override
