@@ -64,8 +64,65 @@ public class Shape {
         }
     }
 
-
     public void update(float x, float y, int pointNumber) {
         mObj.set(pointNumber, new Vertex(x, y));
     }
+
+    public Float getX() {
+        return mObj.get(mObj.size() - 1).x;
+    }
+
+    public Float getY() {
+        return mObj.get(mObj.size() - 1).y;
+    }
+
+
+    public void align(float newX, float newY, int point) {
+        float ca = newX - this.getX();
+        float co = newY - this.getY();
+        float h = (float) Math.sqrt(Math.pow(ca, 2) + Math.pow(co, 2));
+        float tg = co / ca;
+        if (ca >= 0) {
+            if (co >= 0) {
+                //1st quarter
+                if (tg > .5 && tg < 2.3) {
+                    this.update(this.getX() + co, this.getY() + co, point);
+                } else if (tg <= .5){
+                    this.update(this.getX() + h, this.getY(), point);
+                } else {
+                    this.update(this.getX(), this.getY() + h, point);
+                }
+            } else {
+                //4th quarter
+                if (tg < -.5 && tg > -2.3) {
+                    this.update(this.getX() + Math.min(h, -co), this.getY() + Math.min(h, co), point);
+                } else if (tg <= -.5){
+                    this.update(this.getX(), this.getY() - h, point);
+                } else {
+                    this.update(this.getX() + h, this.getY(), point);
+                }
+            }
+        } else {
+            if (co >= 0) {
+                //2nd quarter
+                if (tg < -.5 && tg > -2.3) {
+                    this.update(this.getX() - co, this.getY() + co, point);
+                } else if (tg <= -.5){
+                    this.update(this.getX(), this.getY() + h, point);
+                } else {
+                    this.update(this.getX() - h, this.getY(), point);
+                }
+            } else {
+                //3rd quarter
+                if (tg > .5 && tg < 2.3) {
+                    this.update(this.getX() + co, this.getY() + co, point);
+                } else if (tg <= .5){
+                    this.update(this.getX() - h, this.getY(), point);
+                } else {
+                    this.update(this.getX(), this.getY() - h, point);
+                }
+            }
+        }
+    }
+
 }

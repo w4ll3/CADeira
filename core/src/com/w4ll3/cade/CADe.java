@@ -15,7 +15,6 @@ import com.w4ll3.cade.mystic.*;
 import java.util.ArrayList;
 
 public class CADe extends ApplicationAdapter implements ApplicationListener, InputProcessor {
-	private Rectangle rect;
 	private State function;
 	private int pointNumber;
 	private SpriteBatch batch;
@@ -38,8 +37,6 @@ public class CADe extends ApplicationAdapter implements ApplicationListener, Inp
 		objects = new ArrayList<>();
 		pointNumber = 0;
 		function = State.NONE;
-		rect = new Rectangle(new Vertex(0, 0), new Vertex(100, 0), new Vertex(0, 100), new Vertex(100, 100));
-		objects.add(rect);
 		Gdx.input.setInputProcessor(new InputMultiplexer(this, stage));
 		stage.addListener(new ClickListener(Input.Keys.LEFT) {
 			@Override
@@ -57,6 +54,7 @@ public class CADe extends ApplicationAdapter implements ApplicationListener, Inp
 							objects.add(new Rectangle(new Vertex(x, y), new Vertex(x, y), new Vertex(x, y), new Vertex(x, y)));
 							progress = true;
 							pointNumber++;
+							if (ctrl) pointNumber += 2;
 							break;
 						}
 
@@ -71,6 +69,7 @@ public class CADe extends ApplicationAdapter implements ApplicationListener, Inp
 							objects.add(new Triangle(new Vertex(x, y), new Vertex(x, y), new Vertex(x, y)));
 							progress = true;
 							pointNumber++;
+							if (ctrl) pointNumber++;
 							break;
 						}
 					}
@@ -131,16 +130,22 @@ public class CADe extends ApplicationAdapter implements ApplicationListener, Inp
 						case LINE: {
 							if (pointNumber == 2)
 								return false;
-							else
+							else if (!ctrl)
 								objects.get(objects.size() - 1).update(x, y, pointNumber - 1);
+							else {
+								((Line) objects.get(objects.size() - 1)).align(x, y, pointNumber - 1);
+							}
 							break;
 						}
 
 						case RECT: {
 							if (pointNumber == 4)
 								return false;
-							else
+							else if (!ctrl)
 								objects.get(objects.size() - 1).update(x, y, pointNumber - 1);
+							else {
+								((Rectangle) objects.get(objects.size() - 1)).align(x, y, pointNumber - 1);
+							}
 							break;
 						}
 
@@ -240,6 +245,11 @@ public class CADe extends ApplicationAdapter implements ApplicationListener, Inp
 
 	@Override
 	public boolean keyUp(int keycode) {
+		switch(keycode) {
+			case Input.Keys.CONTROL_LEFT: {
+				ctrl = false;
+			}
+		}
 		return false;
 	}
 

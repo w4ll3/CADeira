@@ -13,5 +13,4 @@ public class Rectangle extends Shape {
         super.add(d);
         super.add(c);
     }
-
 }

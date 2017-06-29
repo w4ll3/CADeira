@@ -6,5 +6,4 @@ public class Line extends Shape {
         super.add(v2);
         super.add(v1);
     }
-
 }
